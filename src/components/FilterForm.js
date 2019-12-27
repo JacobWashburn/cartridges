@@ -78,10 +78,10 @@ const FilterForm = props => {
         }*/
     };
 
-    useEffect(() => {
-        props.setCartridges(cartridges.filter(item => item[keys[0]] === readings[keys[0]] && item[keys[1]] < variancePlus(variance[keys[1]], readings[keys[1]]) && item[keys[1]] > varianceMinus(variance[keys[1]], readings[keys[1]])
-        ))
-    }, [readings]);
+    // useEffect(() => {
+    //     props.setCartridges(cartridges.filter(item => item[keys[0]] === readings[keys[0]] && item[keys[1]] < variancePlus(variance[keys[1]], readings[keys[1]]) && item[keys[1]] > varianceMinus(variance[keys[1]], readings[keys[1]])
+    //     ));
+    // }, [readings]);
 
     const varianceChangeHandler = e => {
         e.preventDefault();
@@ -100,72 +100,68 @@ const FilterForm = props => {
 
     const onSubmitHandler = e => {
         e.preventDefault();
-
-
+        let filterList = cartridges;
+        keys.forEach(key => {
+            if (readings[key]) {
+                if (key === 'caseType' || key === 'primer') {
+                    console.log('key in foreach', key);
+                    filterList = filterList.filter(item => item[key] === readings[key]);
+                    console.log('filterList',key,filterList)
+                } else {
+                    filterList = filterList.filter(item => item[key] <= variancePlus(variance[key], readings[key]) && item[key] >= varianceMinus(variance[key], readings[key]));
+                    console.log('filterList',key,filterList)
+                }
+            }
+        });
+        props.setCartridges(filterList);
     };
 
     return (
         <FormWrapper>
             <Title>Filter:</Title>
-
-            {keys.map(key => {
-                if (key === 'caseType' || key === 'primer') {
-                    return (
-                        <InputWrapper key={key}>
-                            <Label htmlFor={key}>{key}:</Label>
-                            <Input
-                                type='text'
-                                name={key}
-                                value={readings[key]}
-                                onChange={e => onChangeHandler(e)}
-                            />
-                        </InputWrapper>
-                    );
-                } else {
-                    return (
-                        <InputWrapper key={key}>
-                            <Label htmlFor={key}>{key}:</Label>
-                            <Input
-                                type='number'
-                                name={key}
-                                value={readings[key]}
-                                onChange={e => onChangeHandler(e)}
-                            />
-                            <Label htmlFor={key}>Variance:</Label>
-                            <Input
-                                type='number'
-                                name={key}
-                                value={variance[key]}
-                                onChange={e => varianceChangeHandler(e)}
-                            />
-                        </InputWrapper>
-                    );
-                }
-            })}
-
-
+            <Form onSubmit={e => onSubmitHandler(e)}>
+                {keys.map(key => {
+                    if (key === 'caseType' || key === 'primer') {
+                        return (
+                            <InputWrapper key={key}>
+                                <Label htmlFor={key}>{key}:</Label>
+                                <Input
+                                    type='text'
+                                    name={key}
+                                    value={readings[key]}
+                                    onChange={e => onChangeHandler(e)}
+                                />
+                            </InputWrapper>
+                        );
+                    } else {
+                        return (
+                            <InputWrapper key={key}>
+                                <Label htmlFor={key}>{key}:</Label>
+                                <Input
+                                    type='number'
+                                    name={key}
+                                    value={readings[key]}
+                                    onChange={e => onChangeHandler(e)}
+                                    step='.001'
+                                />
+                                <Label htmlFor={key}>Variance:</Label>
+                                <Input
+                                    type='number'
+                                    name={key}
+                                    value={variance[key]}
+                                    onChange={e => varianceChangeHandler(e)}
+                                    step='.001'
+                                />
+                            </InputWrapper>
+                        );
+                    }
+                })}
+                <Button type='submit'>Filter</Button>
+            </Form>
         </FormWrapper>
     );
 };
 
 export default FilterForm;
 
-// if (currentKey) {
-//             if (currentKey === 'caseType' || currentKey === 'primer') {
-//                 const filterList = props.cartridges.filter(item => {
-//                     return item[currentKey].toString().toLowerCase().includes(readings[currentKey].toLowerCase());
-//                 });
-//                 props.setCartridges(filterList);
-//             } else {
-//                 keys.forEach(key => {
-//                     if (key !== 'caseType' && key !== 'primer') {
-//                         console.log('key in foreach', currentKey);
-//                         console.log(`after filter`, props.cartridges);
-//                         if (readings[key]) {
-//                             props.setCartridges(cartridges.filter(item => item[currentKey] < variancePlus(variance[currentKey], readings[currentKey]) && item[currentKey] > varianceMinus(variance[currentKey], readings[currentKey])));
-//                         }
-//
-//                     }
-//                 });
-//             }
-//         }
+

@@ -6,7 +6,8 @@ import {cartridges} from './findCartridges';
 
 
 const CardWrapper = styled.div`
-  border-left: 1px solid black;
+  border: 1px solid black;
+  margin: 3% 2%;
 `;
 const Title = styled.h1``;
 const AttrWrapper = styled.div`
